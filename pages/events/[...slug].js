@@ -1,14 +1,34 @@
 import { useRouter } from "next/router";
 import EventList from "../../components/events/event-list";
-import { getFilteredEvents } from "../../dummy-data";
-function FilteredEventsPage() {
+import { getFilteredEvents } from "../../components/helpers/helper";
+function FilteredEventsPage(props) {
 	const router = useRouter();
 	const filteredData = router.query.slug;
 
-	if (!filteredData) {
+	if (props.loading) {
 		return <p>Loading...</p>;
 	}
 
+	if (props.isValid) {
+		return <p>Invalid filters, please adjust your values</p>;
+	}
+
+	if (!props.filteredEvents || props.filteredEvents.length === 0) {
+		return <p>No events Found</p>;
+	}
+
+	return <EventList items={props.filteredEvents} />;
+}
+
+export async function getServerSideProps(context) {
+	const { slug: filteredData } = context.params;
+	if (!filteredData) {
+		return {
+			props: {
+				loading: true,
+			},
+		};
+	}
 	const filteredYear = filteredData[0];
 	const filteredMonth = filteredData[1];
 
@@ -23,22 +43,23 @@ function FilteredEventsPage() {
 		numMonth > 12 ||
 		numMonth < 1
 	) {
-		return <p>Invalid filters, please adjust your values</p>;
+		return {
+			props: {
+				isValid: false,
+			},
+		};
 	}
 
-	console.log(numYear, numMonth);
-
-	const filteredEvents = getFilteredEvents({
+	const filteredEvents = await getFilteredEvents({
 		year: numYear,
 		month: numMonth,
 	});
 
-	if (!filteredEvents || filteredEvents.length === 0) {
-		return <p>No events Found</p>;
-	}
-	console.log(filteredEvents);
-
-	return <EventList items={filteredEvents} />;
+	return {
+		props: {
+			filteredEvents: filteredEvents,
+		},
+	};
 }
 
 export default FilteredEventsPage;

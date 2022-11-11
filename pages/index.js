@@ -1,14 +1,25 @@
+import { useEffect } from "react";
 import EventList from "../components/events/event-list";
-import { getFeaturedEvents } from "../dummy-data";
+import { getFeaturedEvents } from "../components/helpers/helper";
 
-function Home() {
-	const featuredEvents = getFeaturedEvents();
-	console.log(featuredEvents);
+function Home(props) {
+	const { allEvents } = props;
+
 	return (
 		<>
-			<EventList items={featuredEvents} />
+			{" "}
+			<EventList items={allEvents} />{" "}
 		</>
 	);
+}
+
+export async function getStaticProps() {
+	const featuredEvents = await getFeaturedEvents();
+	return {
+		props: {
+			allEvents: featuredEvents,
+		},
+	};
 }
 
 export default Home;
