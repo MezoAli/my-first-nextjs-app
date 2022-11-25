@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import EventList from "../../components/events/event-list";
 import { getFilteredEvents } from "../../components/helpers/helper";
@@ -17,7 +18,18 @@ function FilteredEventsPage(props) {
 		return <p>No events Found</p>;
 	}
 
-	return <EventList items={props.filteredEvents} />;
+	return (
+		<>
+			<Head>
+				<title>filtered events</title>
+				<meta
+					name="description"
+					content={props.filteredEvents[0]?.description}
+				/>
+			</Head>
+			<EventList items={props.filteredEvents} />
+		</>
+	);
 }
 
 export async function getServerSideProps(context) {

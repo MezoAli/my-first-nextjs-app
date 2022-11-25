@@ -1,9 +1,20 @@
+import Head from "next/head";
 import EventItem from "../../components/events/event-item";
 import { getAllEvents, getEventById } from "../../components/helpers/helper";
+import Comments from "../../components/input/comments";
 function SpecificEventPage(props) {
 	const { event } = props;
 
-	return <EventItem item={event} btn={false} />;
+	return (
+		<>
+			<Head>
+				<title>{event.title}</title>
+				<meta name="description" content={event.description} />
+			</Head>
+			<EventItem item={event} btn={false} />
+			<Comments eventId={event.id} />
+		</>
+	);
 }
 
 export async function getStaticProps(context) {
